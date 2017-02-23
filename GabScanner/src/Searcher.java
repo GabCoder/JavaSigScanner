@@ -1,5 +1,3 @@
-package sigSearcher;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -8,35 +6,36 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by danil on 23.02.2017.
+ * @author gabCode.
+ * @version 1.2
  */
 public class Searcher {
-    private static File target = new File("wrar540.exe");
-    private static File _target = new File("magent_rfrset_damigo.exe");
+    private static File target = new File("app1.exe");
+    private static File _target = new File("app2.exe");
 
-    private static File resFile = new File("resultOfScan.txt");
-    private static final int START_GROUP = 3;
+    private static File resFile = new File("resultOfScan.txt"); // must be in root catalog
+    private static final int START_GROUP = 3; // minimum length of signature
 
     private static List<List <Byte>> sigs = new ArrayList<>();
 
     public static void main(String[] args) {
-        if (!target.isFile() || !_target.isFile()) throw new IllegalArgumentException("isn't file!");
+        if (!target.isFile() || !_target.isFile()) throw new IllegalArgumentException("isn't file!"); // simple check
         byte[] targetBytes = null;
         byte[] _targetBytes = null;
 
         try {
-            targetBytes = Files.readAllBytes(target.toPath());
-            _targetBytes = Files.readAllBytes(_target.toPath());
+            targetBytes = Files.readAllBytes(target.toPath()); // reading all bytes of first app
+            _targetBytes = Files.readAllBytes(_target.toPath()); // reading all bytes of second app
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         long start = System.nanoTime();
-        sigSearch(targetBytes, _targetBytes);
+        sigSearch(targetBytes, _targetBytes); // signature searching
         System.out.println("Scan completed...");
 
         System.out.println("Filtering...");
-        zeroKiller(sigs);
+        zeroKiller(sigs); // removing "zero"-arrays (signatures)
 
         System.out.println("Writing results to file / " + resFile.getName());
         try {
@@ -81,7 +80,7 @@ public class Searcher {
                         confirmedBytes.clear();
                         continue step;
                     }
-                } // Александрович :D
+                }
 
                 boolean close = false;
                 int toAdd = 0;
