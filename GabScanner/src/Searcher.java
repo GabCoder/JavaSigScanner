@@ -31,6 +31,7 @@ public class Searcher {
         }
 
         long start = System.nanoTime();
+        System.out.println("Scan started...");
         sigSearch(targetBytes, _targetBytes); // signature searching
         System.out.println("Scan completed...");
 
@@ -49,7 +50,7 @@ public class Searcher {
 
     private static void zeroKiller(List<List <Byte>> toFilter) {
         step: for (int i = 0; i < toFilter.size(); i++) {
-            System.out.println(i + "/" + toFilter.size());
+            //System.out.println(i + "/" + toFilter.size());
             for (int j = 0; j < toFilter.get(i).size(); ++j) {
                 if (toFilter.get(i).get(j) != 0) {
                     continue step;
@@ -63,7 +64,7 @@ public class Searcher {
 
     private static void sigSearch(byte[] targetBytes, byte[] _targetBytes) {
         for (int offset = 0; offset < (targetBytes.length - START_GROUP); ++offset) {
-            System.out.println("Scanner: " + ( (float)offset / (targetBytes.length - START_GROUP) * 100) + "%");
+            //System.out.println("Scanner: " + ( (float)offset / (targetBytes.length - START_GROUP) * 100) + "%");
             List<Byte> targetComb = new ArrayList<>();
 
             for (int i = 0; i < START_GROUP; ++i) {
