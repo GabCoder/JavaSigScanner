@@ -1,5 +1,3 @@
-package sigSearcher;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -8,14 +6,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by danil on 23.02.2017.
+ * @version 1.1
+ * @author GabCode
  */
-public class Searcher {
-    private static File target = new File("wrar540.exe");
-    private static File _target = new File("ollo1.exe");
 
-    private static File resFile = new File("resultOfScan.txt");
-    private static final int START_GROUP = 3;
+public class Searcher {
+    private static File target = new File("app1.exe"); // First application to scan
+    private static File _target = new File("app2.exe"); // Second application to scan
+
+    private static File resFile = new File("resultOfScan.txt"); // Result-file
+    private static final int START_GROUP = 3; // Minimum length of sig.
 
     private static List<List <Byte>> sigs = new ArrayList<>();
 
@@ -52,7 +52,7 @@ public class Searcher {
         System.out.println("All operations completed! Same signatures has been copied to " + resFile.getName() + " | Time: " + (finish - start) + " nanosec.");
     }
 
-    private static void zeroKiller(List<List <Byte>> toFilter) {
+    private static void zeroKiller(List<List <Byte>> toFilter) { // It removes from the result of the signature of zeros
         step: for (int i = 0; i < toFilter.size(); i++) {
             //System.out.println(i + "/" + toFilter.size());
             for (int j = 0; j < toFilter.get(i).size(); ++j) {
@@ -66,7 +66,7 @@ public class Searcher {
         }
     }
 
-    private static void sameKiller(List<List <Byte>> toFilter) {
+    private static void sameKiller(List<List <Byte>> toFilter) { // It removes from the result of the same signature
         for (int i = 0; i < toFilter.size(); ++i) {
 
             for (int j = (i + 1); j < toFilter.size(); ++j) {
@@ -78,7 +78,7 @@ public class Searcher {
         }
     }
 
-    private static void sigSearch(byte[] targetBytes, byte[] _targetBytes) {
+    private static void sigSearch(byte[] targetBytes, byte[] _targetBytes) { // Scanner of signatures
         for (int offset = 0; offset < (targetBytes.length - START_GROUP); ++offset) {
             //System.out.println("Scanner: " + ( (float)offset / (targetBytes.length - START_GROUP) * 100) + "%");
             List<Byte> targetComb = new ArrayList<>();
@@ -97,7 +97,7 @@ public class Searcher {
                         confirmedBytes.clear();
                         continue step;
                     }
-                } // Александрович :D
+                }
 
                 boolean close = false;
                 int toAdd = 0;
@@ -127,7 +127,7 @@ public class Searcher {
         }
     }
 
-    private static void resultToFile(File writeTo, List<List <Byte>> bytesResult) throws IOException {
+    private static void resultToFile(File writeTo, List<List <Byte>> bytesResult) throws IOException { // Writing result to file
         List <Byte> biggerArray = new ArrayList<>();
         Files.write(writeTo.toPath(), ("").getBytes());
 
