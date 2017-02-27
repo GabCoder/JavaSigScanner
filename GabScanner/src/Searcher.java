@@ -1,3 +1,5 @@
+package sigSearcher;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -6,37 +8,39 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author gabCode.
- * @version 1.2
+ * Created by danil on 23.02.2017.
  */
 public class Searcher {
-    private static File target = new File("app1.exe");
-    private static File _target = new File("app2.exe");
+    private static File target = new File("wrar540.exe");
+    private static File _target = new File("ollo1.exe");
 
-    private static File resFile = new File("resultOfScan.txt"); // must be in root catalog
-    private static final int START_GROUP = 3; // minimum length of signature
+    private static File resFile = new File("resultOfScan.txt");
+    private static final int START_GROUP = 3;
 
     private static List<List <Byte>> sigs = new ArrayList<>();
 
     public static void main(String[] args) {
-        if (!target.isFile() || !_target.isFile()) throw new IllegalArgumentException("isn't file!"); // simple check
+        if (!target.isFile() || !_target.isFile()) throw new IllegalArgumentException("isn't file!");
         byte[] targetBytes = null;
         byte[] _targetBytes = null;
 
         try {
-            targetBytes = Files.readAllBytes(target.toPath()); // reading all bytes of first app
-            _targetBytes = Files.readAllBytes(_target.toPath()); // reading all bytes of second app
+            targetBytes = Files.readAllBytes(target.toPath());
+            _targetBytes = Files.readAllBytes(_target.toPath());
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         long start = System.nanoTime();
-        System.out.println("Scan started...");
-        sigSearch(targetBytes, _targetBytes); // signature searching
+        sigSearch(targetBytes, _targetBytes);
         System.out.println("Scan completed...");
 
+        System.out.println("Clearing...");
+        sameKiller(sigs);
+        System.out.println("Cleared!");
+
         System.out.println("Filtering...");
-        zeroKiller(sigs); // removing "zero"-arrays (signatures)
+        zeroKiller(sigs);
 
         System.out.println("Writing results to file / " + resFile.getName());
         try {
@@ -62,6 +66,18 @@ public class Searcher {
         }
     }
 
+    private static void sameKiller(List<List <Byte>> toFilter) {
+        for (int i = 0; i < toFilter.size(); ++i) {
+
+            for (int j = (i + 1); j < toFilter.size(); ++j) {
+                if (toFilter.get(i).equals(toFilter.get(j))) {
+                    toFilter.remove(j);
+                    j--;
+                }
+            }
+        }
+    }
+
     private static void sigSearch(byte[] targetBytes, byte[] _targetBytes) {
         for (int offset = 0; offset < (targetBytes.length - START_GROUP); ++offset) {
             //System.out.println("Scanner: " + ( (float)offset / (targetBytes.length - START_GROUP) * 100) + "%");
@@ -81,7 +97,7 @@ public class Searcher {
                         confirmedBytes.clear();
                         continue step;
                     }
-                }
+                } // Александрович :D
 
                 boolean close = false;
                 int toAdd = 0;
