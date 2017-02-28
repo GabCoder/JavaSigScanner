@@ -1,21 +1,23 @@
+import FileIO.IO;
+import Filter.Filter;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @version 1.1
  * @author GabCode
+ * @version 2.0
  */
 
 public class Searcher {
-    private static File target = new File("app1.exe"); // First application to scan
-    private static File _target = new File("app2.exe"); // Second application to scan
+    private static File target = new File("app1.exe");
+    private static File _target = new File("app2.exe");
 
-    private static File resFile = new File("resultOfScan.txt"); // Result-file
-    private static final int START_GROUP = 3; // Minimum length of sig.
+    private static File resFile = new File("resultOfScan.txt");
+    private static final int START_GROUP = 3;
 
     private static List<List <Byte>> sigs = new ArrayList<>();
 
@@ -36,15 +38,15 @@ public class Searcher {
         System.out.println("Scan completed...");
 
         System.out.println("Clearing...");
-        sameKiller(sigs);
+        Filter.sameKiller(sigs);
         System.out.println("Cleared!");
 
         System.out.println("Filtering...");
-        zeroKiller(sigs);
+        Filter.zeroKiller(sigs);
 
         System.out.println("Writing results to file / " + resFile.getName());
         try {
-            resultToFile(resFile, sigs);
+            IO.resultToFile(resFile, sigs);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -52,33 +54,7 @@ public class Searcher {
         System.out.println("All operations completed! Same signatures has been copied to " + resFile.getName() + " | Time: " + (finish - start) + " nanosec.");
     }
 
-    private static void zeroKiller(List<List <Byte>> toFilter) { // It removes from the result of the signature of zeros
-        step: for (int i = 0; i < toFilter.size(); i++) {
-            //System.out.println(i + "/" + toFilter.size());
-            for (int j = 0; j < toFilter.get(i).size(); ++j) {
-                if (toFilter.get(i).get(j) != 0) {
-                    continue step;
-                }
-            }
-
-            toFilter.remove(i);
-            i = 0;
-        }
-    }
-
-    private static void sameKiller(List<List <Byte>> toFilter) { // It removes from the result of the same signature
-        for (int i = 0; i < toFilter.size(); ++i) {
-
-            for (int j = (i + 1); j < toFilter.size(); ++j) {
-                if (toFilter.get(i).equals(toFilter.get(j))) {
-                    toFilter.remove(j);
-                    j--;
-                }
-            }
-        }
-    }
-
-    private static void sigSearch(byte[] targetBytes, byte[] _targetBytes) { // Scanner of signatures
+    private static void sigSearch(byte[] targetBytes, byte[] _targetBytes) {
         for (int offset = 0; offset < (targetBytes.length - START_GROUP); ++offset) {
             //System.out.println("Scanner: " + ( (float)offset / (targetBytes.length - START_GROUP) * 100) + "%");
             List<Byte> targetComb = new ArrayList<>();
@@ -124,26 +100,6 @@ public class Searcher {
 
                 if(close) return;
             }
-        }
-    }
-
-    private static void resultToFile(File writeTo, List<List <Byte>> bytesResult) throws IOException { // Writing result to file
-        List <Byte> biggerArray = new ArrayList<>();
-        Files.write(writeTo.toPath(), ("").getBytes());
-
-        while (bytesResult.size() != 0) {
-            int index = 0;
-            for (int i = 0; i < bytesResult.size(); i++) {
-                if (bytesResult.get(i).size() > biggerArray.size()) {
-                    biggerArray = bytesResult.get(i);
-                    index = i;
-                }
-            }
-
-            bytesResult.remove(index);
-
-            Files.write(writeTo.toPath(), (biggerArray.toString() + "\n").getBytes(), StandardOpenOption.APPEND);
-            biggerArray.clear();
         }
     }
 }
